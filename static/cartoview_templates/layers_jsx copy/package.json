@@ -1,0 +1,23 @@
+{
+  "name": "layers_jsx",
+  "version": "1.0.0",
+  "description": "",
+  "main": "layers_main.jsx",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "khaledboka",
+  "license": "ISC",
+  "dependencies": {
+    "babel-core": "^6.24.1",
+    "babel-loader": "^6.4.1",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "react": "^15.5.3",
+    "react-addons-css-transition-group": "^15.5.2",
+    "react-addons-transition-group": "^15.5.2",
+    "react-dom": "^15.5.3",
+    "reactstrap": "^4.5.0",
+    "webpack": "^2.3.3"
+  }
+}

@@ -1,0 +1,78 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>{{app_name}} | Maps</title>
+
+    <!--  bootstrap requires tether-->
+    <script type="text/javascript" src="{% static 'cartoview_templates/js/tether.min.js'%}"></script>
+
+    <!--  bootstrap requires jquery-3 -->
+    <script type="text/javascript" src="{% static 'cartoview_templates/js/jquery-3.2.0.min.js'%}"></script>
+
+    <!--  bootstrap js -->
+    <script type="text/javascript" src="{% static 'cartoview_templates/js/bootstrap-4.0.0-alpha.6-dist/js/bootstrap.min.js' %}"></script>
+
+    <!-- bootstrap css -->
+    <link rel="stylesheet" href="{% static 'cartoview_templates/css/bootstrap-4.0.0-alpha.6-dist/css/bootstrap.min.css' %}">
+
+    <!-- material icons -->
+    <!-- <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> -->
+
+    <!-- font awesomne icons -->
+    <link rel="stylesheet" href='{% static "cartoview_templates/css/font-awesome-4.7.0/css/font-awesome.min.css" %}'>
+
+    <style media="screen">
+      body{
+        width: 80%;
+        margin: auto;
+      }
+
+      /*cardIcon elements from react*/
+      .cardIcon{
+        margin-right: 10px;
+        display: inline-block;
+        text-align: center;
+      }
+
+      /*all i elements*/
+      i, .i{
+        vertical-align: middle;
+        color: black;
+      }
+
+      .i{
+        font-size: 18px;
+      }
+
+      /*remove decoration from href links*/
+      a:link{
+        text-decoration: none;
+      }
+
+      .Layer_Card{
+        border: 1px solid #E5E8E8;
+        margin-bottom: 20px;
+      }
+
+    </style>
+  </head>
+  <body>
+    <!-- use some examples here -->
+    <!-- <h2>using font awesome icons</h2>
+    <p><span><i class="fa fa-bath fa-5x" aria-hidden="true"></i></span></p> -->
+
+    <hr>
+    <!-- render app from layers_jsx -->
+    <div class="" id="templates-form"></div>
+
+    <!-- to use STATIC_URL in react component -->
+    <script type="text/javascript">
+      var STATIC_URL = "{% static "" %}";
+    </script>
+
+    <!-- bundle.js -->
+    <script type="text/javascript" src="{% static 'cartoview_templates/layers_jsx/dist/MapsComponent.js' %}"></script>
+  </body>
+</html>

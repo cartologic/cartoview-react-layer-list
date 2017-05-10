@@ -1,0 +1,140 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>{{app_name}} | Layers</title>
+
+    <!--  bootstrap requires tether-->
+    <script type="text/javascript" src="{% static 'cartoview_templates/js/tether.min.js'%}"></script>
+
+    <!--  bootstrap requires jquery-3 -->
+    <script type="text/javascript" src="{% static 'cartoview_templates/js/jquery-3.2.0.min.js'%}"></script>
+
+    <!--  bootstrap js -->
+    <script type="text/javascript" src="{% static 'cartoview_templates/js/bootstrap-4.0.0-alpha.6-dist/js/bootstrap.min.js' %}"></script>
+
+    <!-- bootstrap css -->
+    <link rel="stylesheet" href="{% static 'cartoview_templates/css/bootstrap-4.0.0-alpha.6-dist/css/bootstrap.min.css' %}">
+
+    <!-- material icons -->
+    <!-- <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> -->
+
+    <!-- font awesomne icons -->
+    <link rel="stylesheet" href='{% static "cartoview_templates/css/font-awesome-4.7.0/css/font-awesome.min.css" %}'>
+
+    <!-- openlayers includes -->
+    <link rel="stylesheet" href="https://openlayers.org/en/v4.1.0/css/ol.css" type="text/css">
+
+    <script src="https://openlayers.org/en/v4.1.0/build/ol.js" type="text/javascript"></script>
+
+
+    <!-- styling elements from ReactJS  -->
+    <style media="screen">
+      body{
+        width: 80%;
+        margin: auto;
+      }
+
+      #FILTERS{
+        margin-bottom: 10px;
+      }
+      /*cardIcon elements from react*/
+      .cardIcon{
+        margin-right: 10px;
+        display: inline-block;
+        text-align: center;
+      }
+
+      /*all i elements*/
+      i, .i{
+        vertical-align: middle;
+        color: black;
+      }
+
+      .i{
+        font-size: 16px;
+      }
+
+      /*remove decoration from href links*/
+      a:link{
+        text-decoration: none;
+      }
+
+      .page-item{
+        cursor: default;
+        color: #2E86C1;
+      }
+
+      .Layer_Card{
+        border: 1px solid #E5E8E8;
+        margin-bottom: 20px;
+      }
+
+      #layersPagination{
+        float: right;
+      }
+
+      li.list-group-item{
+        overflow: hidden;
+      }
+
+      li.list-group-item:hover{
+        background-color: #F9F9F9;
+        cursor: default;
+      }
+
+      li.list-group-item.active:hover{
+        background-color: #0275d8;
+        cursor: default;
+      }
+
+      .sorting{
+        float: right;
+      }
+
+      #orderingButton{
+        float: right;
+      }
+
+      #MapExtent{
+        height: 250px;
+        width: 100%;
+      }
+
+      .filterCollapsableButton{
+        vertical-align: bottom;
+        height: 40px;
+        width: 100%;
+        border: none;
+        color: white;
+        background-color: #555;
+        text-align: left;
+        border-radius: 5px;
+        font-size: 18px;
+        margin-bottom: 5px;
+      }
+      .filterCollapsableButton:focus {outline:0;}
+      .filterCollapsableButton.h5{
+        height: 100%;
+      }
+      .DatePickerElement{
+        margin-bottom: 5px;
+      }
+
+    </style>
+  </head>
+  <body>
+    <hr>
+    <!-- render app from layers_jsx -->
+    <div class="" id="templates-form"></div>
+
+    <!-- to use STATIC_URL in react component -->
+    <script type="text/javascript">
+      var STATIC_URL = "{% static "" %}";
+    </script>
+
+    <!-- bundle.js -->
+    <script type="text/javascript" src="{% static 'cartoview_templates/layers_jsx/dist/LayersComponent.js' %}"></script>
+  </body>
+</html>
