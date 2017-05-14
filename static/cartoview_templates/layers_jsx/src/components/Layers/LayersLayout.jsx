@@ -539,7 +539,9 @@ export default class LayersLayout extends React.Component{
               />
             <hr/>
 
-            <MapExtent CollapseOpen = {this.state.CollapseOpen}/>
+            <MapExtent
+            clearClicked = {this.state.clearClicked} 
+            CollapseOpen = {this.state.CollapseOpen}/>
             <hr/>
           </Col>
 
