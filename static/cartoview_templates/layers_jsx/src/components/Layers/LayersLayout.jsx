@@ -6,7 +6,6 @@ import PropTypes from 'prop-types';
 import {Container, Row, Col, Button} from 'reactstrap';
 import $ from 'jquery';
 
-
 // Main Elements:
 import Layers from "./Layers.jsx";
 
@@ -496,7 +495,6 @@ export default class LayersLayout extends React.Component{
             <DateFilter
               CollapseOpen = {this.state.CollapseOpen}
               onDateChange={(date, isStart)=>{this.onDateChange(date, isStart)}}/>
-
             <hr/>
 
             <ListFilter
@@ -541,9 +539,7 @@ export default class LayersLayout extends React.Component{
               />
             <hr/>
 
-            {/*
             <MapExtent CollapseOpen = {this.state.CollapseOpen}/>
-            */}
             <hr/>
           </Col>
 
