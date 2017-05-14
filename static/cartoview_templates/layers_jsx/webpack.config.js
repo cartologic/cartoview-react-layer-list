@@ -4,12 +4,12 @@ var path = require('path');
 var BUILD_DIR = path.resolve(__dirname, 'dist');
 var APP_DIR = path.resolve(__dirname, 'src');
 
-const LayersComponent = APP_DIR + '/components/Layers/LayersComponent.jsx'
-const MapsComponent = APP_DIR + '/components/Maps/MapsComponent.jsx'
+const LayersLayout = APP_DIR + '/components/Layers/LayersLayout.jsx';
+const MapsComponent = APP_DIR + '/components/Maps/MapsComponent.jsx';
 
 var config = {
   entry: {
-    LayersComponent,
+    LayersLayout,
     MapsComponent,
   },
 
