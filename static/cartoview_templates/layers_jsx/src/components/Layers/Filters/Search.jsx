@@ -12,6 +12,12 @@ export default class Search extends React.Component{
     };
   }
 
+
+  componentWillReceiveProps(nextProps){
+    this.setState({CollapseOpen:!nextProps.CollapseOpen})
+  }
+
+
   render(){
     let CollapseOpen = this.state.CollapseOpen;
     return(

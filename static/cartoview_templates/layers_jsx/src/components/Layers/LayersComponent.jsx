@@ -19,160 +19,7 @@ import Ordering from './Navigations/Ordering.jsx';
 import Search from './Filters/Search.jsx';
 import ListFilter from './Filters/ListFilter.jsx';
 import MapExtent from './Filters/MapExtent.jsx';
-
-// import {Row, Button} from 'reactstrap';
-import { Calendar } from 'react-date-range';
-import {Collapse, UnmountClosed} from 'react-collapse';
-import moment from 'moment';
-
-// git add
-
-export class DateFilter extends React.Component{
-
-  constructor(props){
-    super(props);
-    this.state = {
-      CollapseOpen: false,
-      startCollapseOpen: false,
-      endCollapseOpen: false,
-
-      startDate: '',
-      endDate: '',
-    }
-  }
-
-
-  componentDidMount(){
-    // prevent lossing date input field focus
-    let startDateCalendar = document.querySelector('#startDateCalendar');
-    startDateCalendar.onmousedown = ()=>{return false};
-
-    let endDateCalendar = document.querySelector('#endDateCalendar');
-    endDateCalendar.onmousedown = ()=>{return false};
-  }
-
-
-  onBlur(e){
-    this.setState({startCollapseOpen:false, endCollapseOpen:false});
-  }
-
-
-  onFocus(e){
-    if (e === "start") {
-      this.setState({startCollapseOpen: true})
-    }else this.setState({endCollapseOpen: true})
-  }
-
-
-  dateQS (date_str) {
-    // return date formatted APR 05 2017
-    try {
-      let date = date_str
-      let   mm = date.toString().split(' ')[1];
-      let   dd = date.toString().split(' ')[2];
-      let yyyy = date.toString().split(' ')[3];
-      return yyyy + '-' + mm + '-' + dd;
-    } catch (e) {
-      return "ERROR PARSING DATE"
-    }
-  }
-
-
-  handleSelect(date, isStart){
-    if(isStart)
-      this.setState(
-        {startDate: this.dateQS(date.toDate())},
-        ()=>{this.props.onDateChange(this.state.startDate);}
-      )
-    else
-      this.setState(
-        {endDate: this.dateQS(date.toDate())},
-        ()=>{this.props.onDateChange(this.state.endDate);}
-      );
-  }
-
-
-  onClear(isStart){
-    if(isStart){
-      this.setState(
-        {startDate:""},
-        ()=>{this.props.onDateChange(this.state.startDate);}
-      )
-    }else{
-      this.setState(
-        {endDate:""},
-        ()=>{this.props.onDateChange(this.state.endDate);}
-      )
-    }
-  }
-
-
-  DatePickerElement(when){
-    if(when=="start"){
-      return(
-        <div  className="DatePickerElement">
-          <label style={{marginLeft: 7 + 'px'}}> Start Date</label>
-          <input
-            onFocus = {()=>{this.onFocus("start")}}
-            onBlur = {()=>{this.onBlur()}}
-            type="search" className="form-control" name="startDate"
-            value= {this.state.startDate?this.state.startDate:""}/>
-          <Button onClick={()=>{this.onClear(true)}}>Clear</Button>
-          <Row id="startDateCalendar">
-            <Collapse
-              isOpened={this.state.startCollapseOpen}>
-              <Calendar
-                onChange={(date)=>{this.handleSelect(date, true)}}
-                />
-            </Collapse>
-          </Row>
-        </div>
-      );
-    }else{
-      return(
-        <div  className="DatePickerElement">
-          <label style={{marginLeft: 7 + 'px'}}> End Date</label>
-          <input
-            onFocus = {()=>{this.onFocus("end")}}
-            onBlur = {()=>{this.onBlur()}}
-            type="search" className="form-control" name="endDate"
-            value= {this.state.endDate}/>
-          <Button onClick={()=>{this.onClear(false)}}>Clear</Button>
-          <Row id="endDateCalendar">
-            <Collapse
-              isOpened={this.state.endCollapseOpen}>
-              <Calendar
-                onChange={(date)=>{this.handleSelect(date, false)}}
-                />
-            </Collapse>
-          </Row>
-        </div>
-      );
-    }
-  }
-
-
-  render () {
-    let CollapseOpen = this.state.CollapseOpen;
-    return (
-      <div>
-        <button className="filterCollapsableButton"
-         onClick={()=>{this.setState({CollapseOpen:!this.state.CollapseOpen})}}>
-           <div>
-             <span
-               className={!CollapseOpen?"fa fa-arrow-right fa-1x":"fa fa-arrow-down fa-1x"}
-               aria-hidden="true">
-             </span> Date
-           </div>
-         </button>
-         <Collapse isOpened={this.state.CollapseOpen} hasNestedCollapse={true}>
-           {this.DatePickerElement('start')}
-           {this.DatePickerElement('end')}
-         </Collapse>
-      </div>
-    );
-  }
-}
+import DateFilter from './Filters/DateFilter.jsx';
 
 
 // export default to import the component in anther component
@@ -243,6 +90,9 @@ export default class LayersComponent extends React.Component{
 
       // filter Collapse state
       CollapseOpen: false,
+
+      // clear button clicked
+      clearClicked: false,
     };
   }
 
@@ -318,8 +168,6 @@ export default class LayersComponent extends React.Component{
     let currentParams = builtURL.searchParams.toString();
     console.log(builtURL.href);
 
-
-
     return builtURL;
   }
 
@@ -363,6 +211,7 @@ export default class LayersComponent extends React.Component{
     let url = new URL(this.getUrlWithQS("http://localhost:8000/api/layers/", params, "append"));
     this.setState(
       {
+        clearClicked:true,
         apiURL:url,
         searchInputValue:"",
         activeTab:0,
@@ -370,7 +219,7 @@ export default class LayersComponent extends React.Component{
         ownersActivated:[],
         categoriesActivated:[],
         currentPage:1,
-        CollapseOpen: false,
+        CollapseOpen: false, // not working !
 
         // ascending & descending Buttons
         ascending: false,
@@ -453,6 +302,9 @@ export default class LayersComponent extends React.Component{
     let params = {};
     params[dataFilter] = ""; // appen{urlSearchParm: ''} to params
     let url = new URL(this.getUrlWithQS(this.state.apiURL, params, "delete"));
+
+    // set clearClicked to false to reset the state of filtering
+    this.setState({clearClicked:false})
 
 
     // string of keywords values to filter by
@@ -602,27 +454,16 @@ export default class LayersComponent extends React.Component{
   }
 
 
-  onDateChange(date){
-    let url = new URL(this.state.apiURL);
-    let params = url.searchParams.get('date__range') // captured
-    if(params){
-      // 1. delete date__range from url
-      url = new URL(this.getUrlWithQS(this.state.apiURL, params, "delete"));
-      // now check 1 or 2
-      /**
-      *
-      */
+  onDateChange(date, isStart){
+    if(!date && isStart){console.log("start date cleared");}
+    if(!date && !isStart){console.log('end date cleared');}
+    if(date && isStart){
 
+
+      console.log(date, "start date changed");
+      return 0;
     }
-    // 0. capture the current dateString from url
-    //   if dateString = "" => remove all date params
-    //   else => perform 1 or 2
-    // 1. if start date
-    //     if start date = "" => remove start date from dateString
-    //     else => add start date to the dateString
-    // 2. if end date
-    //     if end date = "" => remove end date from dateString
-    //     else => add end date to the dateString
+    if(date && !isStart){console.log(date, "end date changed");}
   }
 
   // render the main page
@@ -652,7 +493,9 @@ export default class LayersComponent extends React.Component{
             <hr/>
 
 
-            <DateFilter onDateChange={(date)=>{this.onDateChange(date)}}/>
+            <DateFilter
+              CollapseOpen = {this.state.CollapseOpen}
+              onDateChange={(date, isStart)=>{this.onDateChange(date, isStart)}}/>
 
             <hr/>
 
@@ -666,6 +509,7 @@ export default class LayersComponent extends React.Component{
               filterValues = {"keywords"}
               valuesActivated = {"keywordsActivated"}
               onFilterItemClick = {(e, apiKey, filterValue, dataFilter, filterValues, valuesActivated, index)=>{this.onFilterItemClick(e, apiKey, filterValue, dataFilter, filterValues, valuesActivated, index)}}
+              clearClicked = {this.state.clearClicked}
               />
             <hr/>
 
@@ -679,6 +523,7 @@ export default class LayersComponent extends React.Component{
               filterValues = {"owners"}
               valuesActivated = {"ownersActivated"}
               onFilterItemClick = {(e, apiKey, filterValue, dataFilter, filterValues, valuesActivated, index)=>{this.onFilterItemClick(e, apiKey, filterValue, dataFilter, filterValues, valuesActivated, index)}}
+              clearClicked = {this.state.clearClicked}
               />
             <hr/>
 
@@ -692,11 +537,13 @@ export default class LayersComponent extends React.Component{
               filterValues = {"categories"}
               valuesActivated = {"categoriesActivated"}
               onFilterItemClick = {(e, apiKey, filterValue, dataFilter, filterValues, valuesActivated, index)=>{this.onFilterItemClick(e, apiKey, filterValue, dataFilter, filterValues, valuesActivated, index)}}
+              clearClicked = {this.state.clearClicked}
               />
             <hr/>
 
-
-            <MapExtent />
+            {/*
+            <MapExtent CollapseOpen = {this.state.CollapseOpen}/>
+            */}
             <hr/>
           </Col>
 

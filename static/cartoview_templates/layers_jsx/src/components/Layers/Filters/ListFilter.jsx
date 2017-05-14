@@ -11,9 +11,18 @@ export default class ListFilter extends React.Component{
       apiURL: this.props.apiURL,
       filterJSON: {},
 
-      CollapseOpen: false || this.props.CollapseOpen,
+      CollapseOpen: this.props.CollapseOpen,
 
     };
+  }
+
+
+  componentWillReceiveProps(nextProps){
+    // set CollapseOpen to false only if no element checked
+    // prevent auto collapse on item check0
+    if (nextProps.clearClicked){
+      this.setState({CollapseOpen:nextProps.CollapseOpen})
+    }
   }
 
 
@@ -43,6 +52,7 @@ export default class ListFilter extends React.Component{
 
     if (JSON.stringify(filterJSON) === JSON.stringify({})){
       filterElements = <h4>No Key Words</h4>
+      // show the loading gif instead!
     }else{
       filterElements = !filterJSON?[]:filterJSON.objects.map(
         (obj, index) => {
