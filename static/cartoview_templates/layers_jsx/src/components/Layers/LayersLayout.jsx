@@ -241,7 +241,11 @@ export default class LayersLayout extends React.Component{
 
 
   onSearchChange(e){
-    this.setState({searchInputValue: e.target.value}, ()=>{
+    // if only input cleared
+    let searchValue = (e === "clear") ? "" : e.target.value;
+
+    // set searchInputValue and getData() asynchronously
+    this.setState({searchInputValue: searchValue}, ()=>{
       // delete all previous searchParams first
       let params = {"title__icontains" : ''};
       let url = new URL(this.getUrlWithQS(this.state.apiURL, params, "delete"));
@@ -528,7 +532,7 @@ export default class LayersLayout extends React.Component{
               CollapseOpen = {this.state.CollapseOpen}
               searchInputValue={this.state.searchInputValue}
               onSearchChange={(e)=>{this.onSearchChange(e)}}
-              onKeyPress = {(e)=>{this.onSearchChange(e)}}
+
               />
             <hr/>
 
