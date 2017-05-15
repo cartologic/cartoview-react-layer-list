@@ -18,6 +18,7 @@ import Sorting from './Navigations/Sorting.jsx';
 import DateFilter from './Filters/DateFilter.jsx';
 import ListFilter from './Filters/ListFilter.jsx';
 import MapExtent from './Filters/MapExtent.jsx';
+import RegionSearch from './Filters/RegionSearch.jsx';
 import Search from './Filters/Search.jsx';
 
 
@@ -58,6 +59,9 @@ export default class LayersLayout extends React.Component{
 
       // Search Box
       searchInputValue: "",
+
+      // Region Search Box
+      regionSearchInputValue: "",
 
       // ascending & descending Buttons
       ascending: false,
@@ -127,7 +131,7 @@ export default class LayersLayout extends React.Component{
           this.setState({
           layers_JSON: data,
           prev: data.meta.previous?data.meta.previous:null,
-            next: data.meta.next?data.meta.next:null,
+          next: data.meta.next?data.meta.next:null,
           PagesCount: this.PagesCount(data.meta.total_count),
           total_count: data.meta.total_count,
         });
@@ -262,6 +266,40 @@ export default class LayersLayout extends React.Component{
         params = url.searchParams;
         // push new value
         params["title__icontains"] = this.state.searchInputValue;
+        // get the new url with search params
+        url = this.getUrlWithQS(url, params, "append");
+        this.setState({
+          apiURL: url,
+          currentPage: 1,
+          searchParams: params,
+        },()=>this.getData())
+      }
+    })
+  }
+
+
+  onRegionSearchChange(e){
+    // if only input cleared
+    let searchValue = (e === "clear") ? "" : e.target.value;
+
+    // set regionSearchInputValue and getData() asynchronously
+    this.setState({regionSearchInputValue: searchValue}, ()=>{
+      // delete all previous searchParams first
+      let params = {"regions__name__in" : ''};
+      let url = new URL(this.getUrlWithQS(this.state.apiURL, params, "delete"));
+      if (this.state.regionSearchInputValue === "") {
+        // load layers without search params filter
+        url = this.getUrlWithQS(url, {}, "append");
+        this.setState({
+          apiURL: url,
+          currentPage: 1,
+          searchParams: params,
+        },()=>this.getData())
+      } else {
+        // set params to the current url without previous searchParams
+        params = url.searchParams;
+        // push new value
+        params["regions__name__in"] = this.state.regionSearchInputValue;
         // get the new url with search params
         url = this.getUrlWithQS(url, params, "append");
         this.setState({
@@ -532,7 +570,6 @@ export default class LayersLayout extends React.Component{
               CollapseOpen = {this.state.CollapseOpen}
               searchInputValue={this.state.searchInputValue}
               onSearchChange={(e)=>{this.onSearchChange(e)}}
-
               />
             <hr/>
 
@@ -582,6 +619,13 @@ export default class LayersLayout extends React.Component{
               valuesActivated = {"categoriesActivated"}
               onFilterItemClick = {(e, apiKey, filterValue, dataFilter, filterValues, valuesActivated, index)=>{this.onFilterItemClick(e, apiKey, filterValue, dataFilter, filterValues, valuesActivated, index)}}
               clearClicked = {this.state.clearClicked}
+              />
+            <hr/>
+
+            <RegionSearch
+              CollapseOpen = {this.state.CollapseOpen}
+              regionSearchInputValue={this.state.regionSearchInputValue}
+              onRegionSearchChange={(e)=>{this.onRegionSearchChange(e)}}
               />
             <hr/>
 

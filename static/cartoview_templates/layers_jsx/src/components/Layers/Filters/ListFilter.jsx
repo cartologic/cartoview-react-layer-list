@@ -10,9 +10,7 @@ export default class ListFilter extends React.Component{
     this.state = {
       apiURL: this.props.apiURL,
       filterJSON: {},
-
       CollapseOpen: this.props.CollapseOpen,
-
     };
   }
 
