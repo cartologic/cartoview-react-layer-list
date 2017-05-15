@@ -37,7 +37,8 @@ export default class DateFilter extends React.Component{
 
 
   componentWillReceiveProps(nextProps){
-    this.setState({CollapseOpen:nextProps.CollapseOpen})
+    if(this.props.clearClicked)
+      this.setState({CollapseOpen:nextProps.CollapseOpen})
   }
 
 
