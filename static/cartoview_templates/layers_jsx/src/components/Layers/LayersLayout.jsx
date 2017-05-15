@@ -10,15 +10,15 @@ import $ from 'jquery';
 import Layers from "./Layers.jsx";
 
 // Navigations
+import Ordering from './Navigations/Ordering.jsx';
 import Paging from './Navigations/Paging.jsx';
 import Sorting from './Navigations/Sorting.jsx';
-import Ordering from './Navigations/Ordering.jsx';
 
 // Filters
-import Search from './Filters/Search.jsx';
+import DateFilter from './Filters/DateFilter.jsx';
 import ListFilter from './Filters/ListFilter.jsx';
 import MapExtent from './Filters/MapExtent.jsx';
-import DateFilter from './Filters/DateFilter.jsx';
+import Search from './Filters/Search.jsx';
 
 
 // export default to import the component in another component
@@ -71,6 +71,10 @@ export default class LayersLayout extends React.Component{
       map: null,
       extent: "",
 
+      // Search by Date
+      startDate: "",
+      endDate: "",
+
       // Filter by keyword
       keywords:[],
       keywordsActivated: [],
@@ -90,7 +94,7 @@ export default class LayersLayout extends React.Component{
       // filter Collapse state
       CollapseOpen: false,
 
-      // clear button clicked
+      // clear button clicked, if true Collapse all filters
       clearClicked: false,
     };
   }
@@ -122,8 +126,8 @@ export default class LayersLayout extends React.Component{
         .then((data)=>{
           this.setState({
           layers_JSON: data,
-          prev: data.meta.previous,
-          next: data.meta.next,
+          prev: data.meta.previous?data.meta.previous:null,
+            next: data.meta.next?data.meta.next:null,
           PagesCount: this.PagesCount(data.meta.total_count),
           total_count: data.meta.total_count,
         });
@@ -162,7 +166,7 @@ export default class LayersLayout extends React.Component{
   }
 
 
-  urlBuilder(url){
+  getCurrentURL(url){
     let builtURL = new URL(url);
     let currentParams = builtURL.searchParams.toString();
     console.log(builtURL.href);
@@ -218,7 +222,9 @@ export default class LayersLayout extends React.Component{
         ownersActivated:[],
         categoriesActivated:[],
         currentPage:1,
-        CollapseOpen: false, // not working !
+        CollapseOpen: false,
+        startDate: "",
+        endDate: "",
 
         // ascending & descending Buttons
         ascending: false,
@@ -454,15 +460,57 @@ export default class LayersLayout extends React.Component{
 
 
   onDateChange(date, isStart){
-    if(!date && isStart){console.log("start date cleared");}
-    if(!date && !isStart){console.log('end date cleared');}
-    if(date && isStart){
+    // :| Set clearClicked to true, prevent auto Collapse
+    this.setState({clearClicked: false});
 
+    // if start date cleared
+    if(!date && isStart){
+      let params = {"date__gte": ""};
+      let url = new URL(this.getUrlWithQS(this.state.apiURL, params, "delete"));
+      this.setState({apiURL: url}, ()=>{this.getData()});
+    }
+
+    // if end date cleared
+    if(!date && !isStart){
+      let params = {"date__lte": ""};
+      let url = new URL(this.getUrlWithQS(this.state.apiURL, params, "delete"));
+      this.setState({apiURL: url}, ()=>{this.getData()});
+    }
+
+    // if only start date
+    if(date && isStart){
+      // delete previous startDate url searchParams
+      let url = new URL(this.state.apiURL);
+      let params = {"date__gte": ""}
+      url = new URL(this.getUrlWithQS(url, params, "delete"));
+      this.setState({apiURL: url}, ()=>{
+        // add new changed startDate to url searchParams and getData
+        params['date__gte'] = date;
+        url = new URL(this.getUrlWithQS(url, params, "append"));
+        this.setState({apiURL: url}, ()=>{this.getData()})
+      })
 
       console.log(date, "start date changed");
       return 0;
     }
-    if(date && !isStart){console.log(date, "end date changed");}
+
+    // if only end date
+    if(date && !isStart){
+      // delete previous startDate url searchParams
+      let url = new URL(this.state.apiURL);
+      let params = {"date__lte": ""}
+      url = new URL(this.getUrlWithQS(url, params, "delete"));
+      this.setState({apiURL: url}, ()=>{
+        // add new changed startDate to url searchParams and getData
+        params['date__lte'] = date;
+        url = new URL(this.getUrlWithQS(url, params, "append"));
+        this.setState({apiURL: url}, ()=>{this.getData()})
+      })
+
+      console.log(date, "end date changed");
+      return 0;
+    }
+
   }
 
   // render the main page
@@ -471,7 +519,7 @@ export default class LayersLayout extends React.Component{
       <Container>
         <Row>
           <Col md="3" >
-            <Button onClick={()=>{this.urlBuilder(this.state.apiURL)}}>Log Current URL params</Button>
+            <Button onClick={()=>{this.getCurrentURL(this.state.apiURL)}}>Log Current URL params</Button>
             <hr/>
             <Row id="FILTERS">
               <Col md="9" >
@@ -494,7 +542,8 @@ export default class LayersLayout extends React.Component{
 
             <DateFilter
               CollapseOpen = {this.state.CollapseOpen}
-              onDateChange={(date, isStart)=>{this.onDateChange(date, isStart)}}/>
+              onDateChange={(date, isStart)=>{this.onDateChange(date, isStart)}}
+              clearClicked = {this.state.clearClicked}/>
             <hr/>
 
             <ListFilter
@@ -540,7 +589,7 @@ export default class LayersLayout extends React.Component{
             <hr/>
 
             <MapExtent
-            clearClicked = {this.state.clearClicked} 
+            clearClicked = {this.state.clearClicked}
             CollapseOpen = {this.state.CollapseOpen}/>
             <hr/>
           </Col>
