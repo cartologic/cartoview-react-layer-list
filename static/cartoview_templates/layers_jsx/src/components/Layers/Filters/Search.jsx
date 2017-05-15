@@ -33,15 +33,12 @@ export default class Search extends React.Component{
          </button>
          <Collapse isOpened={this.state.CollapseOpen}>
           <InputGroup>
-            <input value={this.props.searchInputValue} type="text" className="form-control" onChange={(e)=>{this.props.onSearchChange(e)}} placeholder="Search By Text"/>
-            {/*Input first to be on the left and search on the right*/}
-
-            {/*<Input onChange={(e)=>{this.props.onSearchChange()}}/>*/}
-
-            {/*onSearchClick is passed as props*/}
-            <InputGroupButton onClick={()=>this.props.onSearchClick()}>
-              Search
-            </InputGroupButton>
+            <input
+              value={this.props.searchInputValue} type="search"
+              className="form-control"
+              onChange={(e)=>{this.props.onSearchChange(e)}}
+              placeholder="Search By Text"
+              />
          </InputGroup>
         </Collapse>
       </div>

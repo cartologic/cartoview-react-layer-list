@@ -2,12 +2,12 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 
-// ohter than react Libraries
+// other than react Libraries
 import {Container, Row, Col, Button} from 'reactstrap';
 import $ from 'jquery';
 
 // Main Elements:
-import Layers from "./Layers.jsx";
+import Layers from "./Layers/Layers.jsx";
 
 // Navigations
 import Ordering from './Navigations/Ordering.jsx';
@@ -240,36 +240,33 @@ export default class LayersLayout extends React.Component{
   }
 
 
-  onSearchClick (){
-    // delete all previous searchParams first
-    let params = {"title__icontains" : ''};
-    let url = new URL(this.getUrlWithQS(this.state.apiURL, params, "delete"));
-    if (this.state.searchInputValue === "") {
-      // load layers without search params filter
-      url = this.getUrlWithQS(url, {}, "append");
-      this.setState({
-        apiURL: url,
-        currentPage: 1,
-        searchParams: params,
-      },()=>this.getData())
-    } else {
-      // set params to the current url without previous searchParams
-      params = url.searchParams;
-      // push new value
-      params["title__icontains"] = this.state.searchInputValue;
-      // get the new url with search params
-      url = this.getUrlWithQS(url, params, "append");
-      this.setState({
-        apiURL: url,
-        currentPage: 1,
-        searchParams: params,
-      },()=>this.getData())
-    }
-  }
-
-
   onSearchChange(e){
-    this.setState({searchInputValue: e.target.value})
+    this.setState({searchInputValue: e.target.value}, ()=>{
+      // delete all previous searchParams first
+      let params = {"title__icontains" : ''};
+      let url = new URL(this.getUrlWithQS(this.state.apiURL, params, "delete"));
+      if (this.state.searchInputValue === "") {
+        // load layers without search params filter
+        url = this.getUrlWithQS(url, {}, "append");
+        this.setState({
+          apiURL: url,
+          currentPage: 1,
+          searchParams: params,
+        },()=>this.getData())
+      } else {
+        // set params to the current url without previous searchParams
+        params = url.searchParams;
+        // push new value
+        params["title__icontains"] = this.state.searchInputValue;
+        // get the new url with search params
+        url = this.getUrlWithQS(url, params, "append");
+        this.setState({
+          apiURL: url,
+          currentPage: 1,
+          searchParams: params,
+        },()=>this.getData())
+      }
+    })
   }
 
 
@@ -475,6 +472,7 @@ export default class LayersLayout extends React.Component{
       let params = {"date__lte": ""};
       let url = new URL(this.getUrlWithQS(this.state.apiURL, params, "delete"));
       this.setState({apiURL: url}, ()=>{this.getData()});
+      return 0;
     }
 
     // if only start date
@@ -489,8 +487,6 @@ export default class LayersLayout extends React.Component{
         url = new URL(this.getUrlWithQS(url, params, "append"));
         this.setState({apiURL: url}, ()=>{this.getData()})
       })
-
-      console.log(date, "start date changed");
       return 0;
     }
 
@@ -506,11 +502,8 @@ export default class LayersLayout extends React.Component{
         url = new URL(this.getUrlWithQS(url, params, "append"));
         this.setState({apiURL: url}, ()=>{this.getData()})
       })
-
-      console.log(date, "end date changed");
       return 0;
     }
-
   }
 
   // render the main page
@@ -532,10 +525,10 @@ export default class LayersLayout extends React.Component{
               </Col>
             </Row>
             <Search
-              onSearchChange={(e)=>{this.onSearchChange(e)}}
-              onSearchClick={()=>{this.onSearchClick()}}
-              searchInputValue={this.state.searchInputValue}
               CollapseOpen = {this.state.CollapseOpen}
+              searchInputValue={this.state.searchInputValue}
+              onSearchChange={(e)=>{this.onSearchChange(e)}}
+              onKeyPress = {(e)=>{this.onSearchChange(e)}}
               />
             <hr/>
 
