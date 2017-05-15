@@ -53,29 +53,16 @@ export default class DateFilter extends React.Component{
   }
 
 
-  formatDate (date_str) {
-    // return date formatted APR-05-2017
-    try {
-      let date = date_str
-      let   mm = date.toString().split(' ')[1];
-      let   dd = date.toString().split(' ')[2];
-      let yyyy = date.toString().split(' ')[3];
-      return yyyy + '-' + mm + '-' + dd;
-    } catch (e) {
-      return "ERROR PARSING DATE"
-    }
-  }
-
-
-  handleSelect(date, isStart){
+  handleSelect(_date, isStart){
+    let date = _date.format("YYYY-MM-DD");
     if(isStart)
       this.setState(
-        {startDate: this.formatDate(date.toDate())},
+        {startDate: date},
         ()=>{this.props.onDateChange(this.state.startDate, isStart);}
       )
     else
       this.setState(
-        {endDate: this.formatDate(date.toDate())},
+        {endDate: date},
         ()=>{this.props.onDateChange(this.state.endDate, isStart);}
       );
   }
