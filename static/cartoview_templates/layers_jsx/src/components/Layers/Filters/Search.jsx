@@ -9,12 +9,16 @@ export default class Search extends React.Component{
     super(props);
     this.state = {
       CollapseOpen: true || this.props.CollapseOpen,
+      searchInputValue: this.props.searchInputValue,
     };
   }
 
 
   componentWillReceiveProps(nextProps){
-    this.setState({CollapseOpen:!nextProps.CollapseOpen})
+    this.setState({
+      CollapseOpen:!nextProps.CollapseOpen,
+      searchInputValue:nextProps.searchInputValue
+    })
   }
 
 
@@ -32,14 +36,18 @@ export default class Search extends React.Component{
              </div>
          </button>
          <Collapse isOpened={this.state.CollapseOpen}>
-          <InputGroup>
+          <div className="btn-group" style={{width: "100%"}}>
             <input
-              value={this.props.searchInputValue} type="search"
+              value={this.state.searchInputValue?this.state.searchInputValue:""}
+              type="search"
               className="form-control"
               onChange={(e)=>{this.props.onSearchChange(e)}}
               placeholder="Search By Text"
               />
-         </InputGroup>
+            <span id="clearSearchInput"
+              className="fa fa-times fa-1x"
+              onClick={(e)=>{this.props.onSearchChange("clear")}}></span>
+         </div>
         </Collapse>
       </div>
     );
