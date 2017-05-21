@@ -5,29 +5,13 @@
     <meta charset="utf-8">
     <title>{{app_name}} | Layers</title>
 
-    <!--  bootstrap requires tether-->
-    <script type="text/javascript" src="{% static 'cartoview_templates/js/tether.min.js'%}"></script>
 
-    <!--  bootstrap requires jquery-3 -->
-    <script type="text/javascript" src="{% static 'cartoview_templates/js/jquery-3.2.0.min.js'%}"></script>
-
-    <!--  bootstrap js -->
-    <script type="text/javascript" src="{% static 'cartoview_templates/js/bootstrap-4.0.0-alpha.6-dist/js/bootstrap.min.js' %}"></script>
 
     <!-- bootstrap css -->
     <link rel="stylesheet" href="{% static 'cartoview_templates/css/bootstrap-4.0.0-alpha.6-dist/css/bootstrap.min.css' %}">
 
-    <!-- material icons -->
-    <!-- <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> -->
-
     <!-- font awesomne icons -->
     <link rel="stylesheet" href='{% static "cartoview_templates/css/font-awesome-4.7.0/css/font-awesome.min.css" %}'>
-
-    <!--  openlayers ol.js -->
-    <script type="text/javascript" src="{% static 'cartoview_templates/js/ol.js' %}"></script>
-
-    <!-- react-select css -->
-    <link rel="stylesheet" href="https://unpkg.com/react-select/dist/react-select.css">
 
     <!-- styling elements from ReactJS  -->
     <style media="screen">
@@ -153,6 +137,19 @@
     <hr>
     <!-- render app from layers_jsx -->
     <div class="" id="templates-form"></div>
+    
+
+    <!--  openlayers ol.js -->
+    <script type="text/javascript" src="{% static 'cartoview_templates/js/ol.js' %}"></script>
+
+    <!--  bootstrap requires tether-->
+    <script type="text/javascript" src="{% static 'cartoview_templates/js/tether.min.js'%}"></script>
+
+    <!--  bootstrap requires jquery-3 -->
+    <script type="text/javascript" src="{% static 'cartoview_templates/js/jquery-3.2.0.min.js'%}"></script>
+
+    <!--  bootstrap js -->
+    <script type="text/javascript" src="{% static 'cartoview_templates/js/bootstrap-4.0.0-alpha.6-dist/js/bootstrap.min.js' %}"></script>
 
     <!-- to use STATIC_URL in react component -->
     <script type="text/javascript">
