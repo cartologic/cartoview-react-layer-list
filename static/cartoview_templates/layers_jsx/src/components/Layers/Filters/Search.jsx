@@ -1,7 +1,7 @@
 import React from 'react';
-import {Row, Col, InputGroup, InputGroupButton} from 'reactstrap';
 
-import {Collapse, UnmountClosed} from 'react-collapse';
+import {Row, Col, InputGroup, InputGroupButton} from 'reactstrap';
+import {Collapse} from 'react-collapse';
 
 
 export default class Search extends React.Component{

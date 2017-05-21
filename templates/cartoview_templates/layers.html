@@ -23,11 +23,11 @@
     <!-- font awesomne icons -->
     <link rel="stylesheet" href='{% static "cartoview_templates/css/font-awesome-4.7.0/css/font-awesome.min.css" %}'>
 
-    <!-- openlayers includes -->
-    <link rel="stylesheet" href="https://openlayers.org/en/v4.1.0/css/ol.css" type="text/css">
-
-    <!--  ol.js -->
+    <!--  openlayers ol.js -->
     <script type="text/javascript" src="{% static 'cartoview_templates/js/ol.js' %}"></script>
+
+    <!-- react-select css -->
+    <link rel="stylesheet" href="https://unpkg.com/react-select/dist/react-select.css">
 
     <!-- styling elements from ReactJS  -->
     <style media="screen">
@@ -35,10 +35,14 @@
         width: 80%;
         margin: auto;
       }
+      #clearButton:focus{
+        outline: none;
+      }
 
       #FILTERS{
         margin-bottom: 10px;
       }
+
       /*cardIcon elements from react*/
       .cardIcon{
         margin-right: 10px;
@@ -87,6 +91,11 @@
       li.list-group-item.active:hover{
         background-color: #0275d8;
         cursor: default;
+      }
+
+      /*region search results */
+      #regions li.list-group-item:hover{
+        background-color: none;
       }
 
       /*az sorting*/

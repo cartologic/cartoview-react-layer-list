@@ -15,6 +15,7 @@ import Paging from './Navigations/Paging.jsx';
 import Sorting from './Navigations/Sorting.jsx';
 
 // Filters
+import ClearButton from './Filters/ClearButton.jsx';
 import DateFilter from './Filters/DateFilter.jsx';
 import ListFilter from './Filters/ListFilter.jsx';
 import MapExtent from './Filters/MapExtent.jsx';
@@ -35,15 +36,17 @@ export default class LayersLayout extends React.Component{
     const keywordsURL = new URL("http://localhost:8000/api/keywords");
     const categoriesURL = new URL("http://localhost:8000/api/categories/");
     const ownersURL = new URL("http://localhost:8000/api/owners/");
+    const regionsURL = new URL("http://localhost:8000/api/regions/");
 
     this.state = {
       // JSONs / API Resources
-      layers_JSON: {},
+      layersJSON: {},
 
       apiURL: apiURL,
       keywordsURL:keywordsURL,
       ownersURL:ownersURL,
       categoriesURL:categoriesURL,
+      regionsURL:regionsURL,
 
       total_count: 0,
       PagesCount: 0,
@@ -62,6 +65,7 @@ export default class LayersLayout extends React.Component{
 
       // Region Search Box
       regionSearchInputValue: "",
+      ulDisplayed: false,
 
       // ascending & descending Buttons
       ascending: false,
@@ -99,7 +103,7 @@ export default class LayersLayout extends React.Component{
       CollapseOpen: false,
 
       // clear button clicked, if true Collapse all filters
-      clearClicked: false,
+      clearClicked: true,
     };
   }
 
@@ -129,7 +133,7 @@ export default class LayersLayout extends React.Component{
       .then((res)=>{res.json()
         .then((data)=>{
           this.setState({
-          layers_JSON: data,
+          layersJSON: data,
           prev: data.meta.previous?data.meta.previous:null,
           next: data.meta.next?data.meta.next:null,
           PagesCount: this.PagesCount(data.meta.total_count),
@@ -198,17 +202,19 @@ export default class LayersLayout extends React.Component{
         // new ol.control.ZoomSlider,
       ],
     });
-    this.setState({map:map})
 
-    // on map drag event | openlayers api docs
-    let pointerdrag = (evt) => {
-      let map = evt.map;
-      let extent = map.getView().calculateExtent(map.getSize());
-      // transform extent measuring units between ESPG standards
-      extent = ol.proj.transformExtent(extent, 'EPSG:3857', 'EPSG:4326');
-      this.setState({extent:extent}, ()=>{this.onExtentChange()});
-    }
-    map.on('pointerdrag', pointerdrag)
+    this.setState({map:map},()=>{
+      // on map moveend event | openlayers api docs
+      let moveend = (evt) => {
+        let map = evt.map;
+        let extent = map.getView().calculateExtent(map.getSize());
+        // transform extent measuring units between ESPG standards
+        extent = ol.proj.transformExtent(extent, 'EPSG:3857', 'EPSG:4326');
+        this.setState({extent:extent,}, ()=>{this.onExtentChange()});
+      }
+
+      map.on('moveend', moveend)
+    })
   }
 
 
@@ -249,7 +255,7 @@ export default class LayersLayout extends React.Component{
     let searchValue = (e === "clear") ? "" : e.target.value;
 
     // set searchInputValue and getData() asynchronously
-    this.setState({searchInputValue: searchValue}, ()=>{
+    this.setState({searchInputValue: searchValue, clearClicked: false}, ()=>{
       // delete all previous searchParams first
       let params = {"title__icontains" : ''};
       let url = new URL(this.getUrlWithQS(this.state.apiURL, params, "delete"));
@@ -278,37 +284,20 @@ export default class LayersLayout extends React.Component{
   }
 
 
-  onRegionSearchChange(e){
-    // if only input cleared
-    let searchValue = (e === "clear") ? "" : e.target.value;
+  onRegionSearchChange(searchValue){
+    console.log(searchValue);
+    searchValue = searchValue.trim()
+    let params = {"regions__name__in":""}
+    let url = new URL(this.getUrlWithQS(this.state.apiURL, params, "delete"));
 
-    // set regionSearchInputValue and getData() asynchronously
-    this.setState({regionSearchInputValue: searchValue}, ()=>{
-      // delete all previous searchParams first
-      let params = {"regions__name__in" : ''};
-      let url = new URL(this.getUrlWithQS(this.state.apiURL, params, "delete"));
-      if (this.state.regionSearchInputValue === "") {
-        // load layers without search params filter
-        url = this.getUrlWithQS(url, {}, "append");
-        this.setState({
-          apiURL: url,
-          currentPage: 1,
-          searchParams: params,
-        },()=>this.getData())
-      } else {
-        // set params to the current url without previous searchParams
-        params = url.searchParams;
-        // push new value
-        params["regions__name__in"] = this.state.regionSearchInputValue;
-        // get the new url with search params
-        url = this.getUrlWithQS(url, params, "append");
-        this.setState({
-          apiURL: url,
-          currentPage: 1,
-          searchParams: params,
-        },()=>this.getData())
-      }
-    })
+    if(searchValue === ""){
+      this.setState({apiURL: url}, ()=>{this.getData()})
+      return
+    }
+
+    params = {"regions__name__in":searchValue}
+    url = new URL(this.getUrlWithQS(this.state.apiURL, params, "append"));
+    this.setState({apiURL: url, clearClicked: false}, ()=>{this.getData()})
   }
 
 
@@ -322,6 +311,7 @@ export default class LayersLayout extends React.Component{
       this.setState({
         currentPage: this.state.currentPage+=1,
         apiURL : url.origin + this.state.next,
+        clearClicked: false,
       }, () => this.getData());
     }
   }
@@ -336,6 +326,7 @@ export default class LayersLayout extends React.Component{
       this.setState({
         currentPage: this.state.currentPage-=1,
         apiURL : url.origin + this.state.prev,
+        clearClicked: false,
       }, () => this.getData());
     }
   }
@@ -472,7 +463,7 @@ export default class LayersLayout extends React.Component{
     params["order_by"] = e.target.name;
 
     this.setState(
-      {activeTab:tabIndex, apiURL:url, searchParams:params, orderingButton:false},
+      {activeTab:tabIndex, apiURL:url, searchParams:params, orderingButton:false, clearClicked:false},
       ()=>{
         url = new URL(this.getUrlWithQS(this.state.apiURL, this.state.searchParams, "append"));
         this.setState({apiURL:url}, ()=>{this.getData()})
@@ -487,9 +478,9 @@ export default class LayersLayout extends React.Component{
     let url = new URL(this.getUrlWithQS(this.state.apiURL, params, "delete"));
 
     // set the new params and load data accordingly
-    params["extent"] = this.state.extent;
+    params.extent = this.state.extent;
     this.setState(
-      {apiURL:url, searchParams:params},
+      {clearClicked:false, apiURL:url, searchParams:params,},
       ()=>{
         url = new URL(this.getUrlWithQS(this.state.apiURL, this.state.searchParams, "append"));
         this.setState({apiURL:url}, ()=>{this.getData()})
@@ -550,6 +541,7 @@ export default class LayersLayout extends React.Component{
 
   // render the main page
   render () {
+
     return (
       <Container>
         <Row>
@@ -561,11 +553,21 @@ export default class LayersLayout extends React.Component{
                 <h3>Filters:</h3>
               </Col>
               <Col md="3" >
-                <Button
-                  style={{float: "right"}}
-                  onClick={()=>{this.onClearClick()}}>Clear</Button>
+                <ClearButton
+                  cleared = {this.state.clearClicked}
+                  onClick={this.onClearClick.bind(this)}/>
               </Col>
             </Row>
+
+            <RegionSearch
+              apiURL = {this.state.regionsURL}
+              clearClicked = {this.state.clearClicked}
+              onChange={(e)=>{this.onRegionSearchChange(e)}}
+              />
+            <hr/>
+
+
+
             <Search
               CollapseOpen = {this.state.CollapseOpen}
               searchInputValue={this.state.searchInputValue}
@@ -622,16 +624,7 @@ export default class LayersLayout extends React.Component{
               />
             <hr/>
 
-            <RegionSearch
-              CollapseOpen = {this.state.CollapseOpen}
-              regionSearchInputValue={this.state.regionSearchInputValue}
-              onRegionSearchChange={(e)=>{this.onRegionSearchChange(e)}}
-              />
-            <hr/>
-
-            <MapExtent
-            clearClicked = {this.state.clearClicked}
-            CollapseOpen = {this.state.CollapseOpen}/>
+            <MapExtent clearClicked = {this.state.clearClicked}/>
             <hr/>
           </Col>
 
@@ -655,7 +648,7 @@ export default class LayersLayout extends React.Component{
             <br></br>
 
             <Row>
-              <Layers layersJSON={this.state.layers_JSON}/>
+              <Layers layersJSON={this.state.layersJSON}/>
 
               <Paging
                 currentPage = {this.state.currentPage}

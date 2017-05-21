@@ -6,14 +6,14 @@ export default class MapExtent extends React.Component{
   constructor(props){
     super(props);
     this.state = {
-      CollapseOpen: this.props.CollapseOpen,
+      CollapseOpen: false,
     };
   }
 
 
   componentWillReceiveProps(nextProps){
     if(this.props.clearClicked) {
-      this.setState({CollapseOpen:nextProps.CollapseOpen})
+      this.setState({CollapseOpen:false})
     }
   }
 

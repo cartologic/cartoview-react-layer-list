@@ -5,7 +5,6 @@ import { ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reac
 export default class Ordering extends React.Component{
   constructor(props) {
     super(props);
-
     this.state = {
       dropdownOpen: false
     };
@@ -45,7 +44,6 @@ export default class Ordering extends React.Component{
 
 
   render() {
-
     return (
       <ButtonDropdown id="orderingButton" isOpen={this.state.dropdownOpen} toggle={()=>{this.toggle()}}>
         <DropdownToggle caret>

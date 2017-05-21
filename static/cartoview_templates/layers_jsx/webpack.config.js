@@ -33,7 +33,6 @@ var config = {
         loader: ['css-loader',]
         // loader: ['css-loader', 'style-loader']
         // loader: ['to-string-loader', 'css-loader']
-
       },
     ],
 
